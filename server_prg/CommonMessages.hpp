@@ -1,0 +1,20 @@
+#ifndef COMMON_MESSAGES_HPP
+#define COMMON_MESSAGES_HPP
+
+// Error Messages
+#define ERR_SOCKET_CREATION     "Error creating socket."
+#define ERR_BIND_FAILED         "Error binding socket."
+#define ERR_INVALID_COMMAND     "Invalid command."
+#define ERR_FILE_NOT_FOUND      "File not found."
+#define ERR_DIR_NOT_FOUND       "Directory not found."
+#define ERR_FILE_CREATE_FAILED  "Failed to create file."
+#define ERR_FILE_REMOVE_FAILED  "Failed to remove file."
+
+// Success Messages
+#define SUCCESS_CONNECTED       "Connected to server."
+#define SUCCESS_FILE_CREATED    "File created successfully."
+#define SUCCESS_FILE_REMOVED    "File removed successfully."
+#define SUCCESS_FILE_COPIED     "File copied successfully."
+
+#endif // COMMON_MESSAGES_HPP
+

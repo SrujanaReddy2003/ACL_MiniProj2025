@@ -1,13 +1,8 @@
 // ServerUDP.cpp
 #include "ServerUDP.hpp"
 #include "CommandProcessor.hpp"
-#include "Error.hpp"
-#include "Success.hpp"
-#include <iostream>
-#include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
+#include "CommonMessages.hpp"
+#include "CommonHeader.hpp"
  
 ServerUDP::ServerUDP(const std::string& ip, int port) {
     start(ip, port);

@@ -1,11 +1,7 @@
 #include "CommandProcessor.hpp"
-#include "Error.hpp"
-#include "Success.hpp"
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
-#include <iostream>
+#include "CommonMessages.hpp"
+#include "CommonHeader.hpp"
+
 namespace fs = std::filesystem;
  
 std::string CommandProcessor::process(const std::string& message) {
@@ -25,6 +21,17 @@ std::string CommandProcessor::process(const std::string& message) {
         std::string file = message.substr(8);
         return handleCreate(file);
     }
+    if (message.find("-cp") == 0) {
+    std::istringstream iss(message.substr(4)); // Skip "-cp "
+    std::string src, dest;
+    iss >> src >> dest;
+ 
+    if (src.empty() || dest.empty()) {
+        return ERR_INVALID_COMMAND;
+    }
+ 
+    return handleCopy(src, dest);
+}
  
     if (message.find("-rm") == 0) {
         std::string file = message.substr(4);
@@ -39,7 +46,7 @@ std::string CommandProcessor::handleList(const std::string& inputDir) {
     dir.erase(0, dir.find_first_not_of(" \t\n\r"));
     dir.erase(dir.find_last_not_of(" \t\n\r") + 1);
  
-    if(dir == "/root"){
+    if(dir == "/"){
             return ERR_DIR_NOT_FOUND;
     }
  
@@ -80,6 +87,31 @@ std::string CommandProcessor::handleRead(const std::string& file) {
     }
  
     return content;
+}
+
+std::string CommandProcessor::handleCopy(const std::string& src, const std::string& dest) {
+        std::string path1 = src;
+        std::string path2=dest;
+       if (!path1.empty() && path1[0] == '~') {
+       const char* home = std::getenv("HOME");
+       if (home) path1 = std::string(home) + path1.substr(1);
+    }
+        if (!path2.empty() && path2[0] == '~') {
+       const char* home = std::getenv("HOME");
+       if (home) path2 = std::string(home) + path2.substr(1);
+    }
+    std::ifstream in(src, std::ios::binary);
+    if (!in) {
+        return ERR_FILE_NOT_FOUND;
+    }
+
+    std::ofstream out(dest, std::ios::binary);
+    if (!out) {
+        return ERR_FILE_CREATE_FAILED;
+    }
+
+    out << in.rdbuf();
+    return SUCCESS_FILE_COPIED;
 }
  
 std::string CommandProcessor::handleCreate(const std::string& file) {

@@ -1,11 +1,7 @@
 #include "ServerTCP.hpp"
 #include "CommandProcessor.hpp"
-#include "Error.hpp"
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+#include "CommonMessages.hpp"
+#include "CommonHeader.hpp"
  
 ServerTCP::ServerTCP(const std::string& ip, int port) {
     start(ip, port);
