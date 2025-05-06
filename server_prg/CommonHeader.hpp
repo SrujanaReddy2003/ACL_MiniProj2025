@@ -12,5 +12,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <stdexcept>
+#include <dirent.h>
+#include <cerrno>
 
 #endif

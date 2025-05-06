@@ -1,12 +1,13 @@
 #include "ClientTCP.hpp"
 #include "ClientUDP.hpp"
+#include "CommonMessages.hpp"
 #include <iostream>
  
 using namespace std;
  
 int main(int argc, char* argv[]) {
     if (argc != 5) {
-        cerr << "Usage: ./iftp_client -cl -tcp/-udp <IP> <PORT>\n";
+        cout << ERR_INVALID_ARGS << endl;
         return 1;
     }
  
@@ -16,7 +17,7 @@ int main(int argc, char* argv[]) {
     int port = stoi(argv[4]);
  
     if (mode != "-cl") {
-       cerr << "Only client mode (-cl) is supported in this main file.\n";
+       cout << ERR_UNSUPPORTED_MODE << endl;
         return 1;
     }
  
@@ -24,23 +25,23 @@ int main(int argc, char* argv[]) {
     if (proto == "-tcp") {
         ClientTCP client(ip, port);
         if (!client.checkConnection()) {
-         cerr << "Error: Ping failed. Server is not reachable"<< endl;
+         cout << ERR_SERVER_UNREACHABLE << endl;
             return 1;
         }
-        cout << "Connected to server successfully." << endl;
+        cout << SUCCESS_CLIENT_CONNECTED << endl;
         client.run();
  
     } else if (proto == "-udp") {
         ClientUDP client(ip, port);
          if (!client.checkConnection()) {
-          cerr << "Error: Ping failed. Server is not reachable" << endl;
+          cerr << ERR_SERVER_UNREACHABLE << endl;
             return 1;
         }
  
-        cout << "Connected to server successfully." << endl;
+        cout << SUCCESS_CLIENT_CONNECTED << endl;
         client.run();
     } else {
-        cerr << "Invalid protocol. Use -tcp or -udp.\n";
+        cout << ERR_INVALID_PROTOCOL << endl;
         return 1;
     }
  

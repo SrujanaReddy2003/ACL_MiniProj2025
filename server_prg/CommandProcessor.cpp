@@ -12,13 +12,13 @@ std::string CommandProcessor::process(const std::string& message) {
         return handleList(dir);
     }
  
-    if (message.find("-read") == 0) {
-        std::string file = message.substr(5);
+    if (message.find("-re") == 0) {
+        std::string file = message.substr(4);
         return handleRead(file);
     }
  
-    if (message.find("-create") == 0) {
-        std::string file = message.substr(8);
+    if (message.find("-cr") == 0) {
+        std::string file = message.substr(4);
         return handleCreate(file);
     }
     if (message.find("-cp") == 0) {
@@ -45,21 +45,24 @@ std::string CommandProcessor::handleList(const std::string& inputDir) {
     std::string dir = inputDir;
     dir.erase(0, dir.find_first_not_of(" \t\n\r"));
     dir.erase(dir.find_last_not_of(" \t\n\r") + 1);
- 
-    if(dir == "/"){
-            return ERR_DIR_NOT_FOUND;
-    }
- 
- 
-    if (!dir.empty() && dir[0] == '~') {
-        const char* home = std::getenv("HOME");
-        if (home) dir = std::string(home) + dir.substr(1);
-    }
- 
+
+
     if (dir.empty()) dir = fs::current_path().string();
- 
-    if (!fs::exists(dir) || !fs::is_directory(dir)) return ERR_DIR_NOT_FOUND;
- 
+
+    // Use opendir for permission/error checking
+    DIR* d = opendir(dir.c_str());
+    if (!d) {
+        switch (errno) {
+            case EACCES:
+                return ERR_PERMISSION_DENIED;
+            case ENOENT:
+                return ERR_DIR_NOT_FOUND;
+            default:
+                return ERR_UNKNOWN;
+        }
+    }
+    closedir(d);
+
     std::string result;
     for (const auto& entry : fs::directory_iterator(dir)) {
         result += entry.path().filename().string() + "\n";
@@ -71,10 +74,6 @@ std::string CommandProcessor::handleRead(const std::string& file) {
     std::string path = file;
     path.erase(0, path.find_first_not_of(" \t\n\r"));
     path.erase(path.find_last_not_of(" \t\n\r") + 1);
-     if (!path.empty() && path[0] == '~') {
-        const char* home = std::getenv("HOME");
-        if (home) path = std::string(home) + path.substr(1);
-    }
  
     if (!fs::exists(path)) return ERR_FILE_NOT_FOUND;
  
@@ -90,16 +89,6 @@ std::string CommandProcessor::handleRead(const std::string& file) {
 }
 
 std::string CommandProcessor::handleCopy(const std::string& src, const std::string& dest) {
-        std::string path1 = src;
-        std::string path2=dest;
-       if (!path1.empty() && path1[0] == '~') {
-       const char* home = std::getenv("HOME");
-       if (home) path1 = std::string(home) + path1.substr(1);
-    }
-        if (!path2.empty() && path2[0] == '~') {
-       const char* home = std::getenv("HOME");
-       if (home) path2 = std::string(home) + path2.substr(1);
-    }
     std::ifstream in(src, std::ios::binary);
     if (!in) {
         return ERR_FILE_NOT_FOUND;
@@ -116,20 +105,12 @@ std::string CommandProcessor::handleCopy(const std::string& src, const std::stri
  
 std::string CommandProcessor::handleCreate(const std::string& file) {
     std::string path = file;
-    if (!path.empty() && path[0] == '~') {
-        const char* home = std::getenv("HOME");
-        if (home) path = std::string(home) + path.substr(1);
-    }
     std::ofstream f(path);
- 
+    if(!fs::exists(path))return ERR_PATH_NOT_FOUND;
     return f ? SUCCESS_FILE_CREATED : ERR_FILE_CREATE_FAILED;
 }
  
 std::string CommandProcessor::handleRemove(const std::string& file) {
     std::string path = file;
-     if (!path.empty() && path[0] == '~') {
-        const char* home = std::getenv("HOME");
-        if (home) path = std::string(home) + path.substr(1);
-    }
     return (remove(path.c_str()) == 0) ? SUCCESS_FILE_REMOVED : ERR_FILE_REMOVE_FAILED;
 }

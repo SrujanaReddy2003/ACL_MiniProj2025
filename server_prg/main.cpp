@@ -1,12 +1,13 @@
 #include "ServerTCP.hpp"
 #include "ServerUDP.hpp"
+#include "CommonMessages.hpp"
 #include <iostream>
  
 using namespace std;
  
 int main(int argc, char* argv[]) {
   if (argc != 5) {
-        cerr << "Usage: ./iftp_server -sr -tcp/-udp <IP> <PORT>\n";
+        cout << ERR_INVALID_ARGS << endl;
         return 1;
     }
  
@@ -16,7 +17,7 @@ int main(int argc, char* argv[]) {
     int port = stoi(argv[4]);
  
     if (mode != "-sr") {
-     cerr << "Only Server mode (-sr) is supported in this main file.\n";
+     cout << ERR_UNSUPPORTED_MODE << endl;
      return 1;
     }
  
@@ -28,7 +29,7 @@ int main(int argc, char* argv[]) {
             ServerUDP server(ip,port);
             server.start(ip,port);
         } else {
-            cerr << "Invalid protocol. Use -tcp or -udp.\n" << endl;
+            cout << ERR_INVALID_PORT << endl;
             return 1;
         }
     }
