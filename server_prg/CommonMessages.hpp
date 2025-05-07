@@ -11,7 +11,7 @@
 #define ERR_FILE_REMOVE_FAILED  "Failed to remove file."
 #define ERR_PERMISSION_DENIED "Error: Permission denied"
 #define ERR_UNKNOWN "Error: Unknown error occurred"
-#define ERR_PATH_NOT_FOUND "File Path not found"
+#define ERR_FILE_ALREADY_EXISTS "File already exists"
 // Success Messages
 #define SUCCESS_CONNECTED       "Connected to server."
 #define SUCCESS_FILE_CREATED    "File created successfully."

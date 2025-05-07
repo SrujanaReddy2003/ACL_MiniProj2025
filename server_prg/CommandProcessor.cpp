@@ -105,8 +105,8 @@ std::string CommandProcessor::handleCopy(const std::string& src, const std::stri
  
 std::string CommandProcessor::handleCreate(const std::string& file) {
     std::string path = file;
+    if(fs::exists(file)) return ERR_FILE_ALREADY_EXISTS;
     std::ofstream f(path);
-    if(!fs::exists(path))return ERR_PATH_NOT_FOUND;
     return f ? SUCCESS_FILE_CREATED : ERR_FILE_CREATE_FAILED;
 }
  
